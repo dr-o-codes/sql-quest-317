@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL Quest: Campus Database Challenge | CS317</title>
+  <meta name="description" content="CS317 relational database practice. Write real SQL queries against an in-browser database.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='5.5' rx='8' ry='3' fill='none' stroke='%232f6fed' stroke-width='2'/%3E%3Cpath d='M4 5.5v13c0 1.66 3.58 3 8 3s8-1.34 8-3v-13' fill='none' stroke='%232f6fed' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" width="34" height="34" aria-hidden="true" focusable="false">
+        <ellipse cx="12" cy="5.5" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M4 5.5v6.5c0 1.66 3.58 3 8 3s8-1.34 8-3V5.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M4 12v6.5c0 1.66 3.58 3 8 3s8-1.34 8-3V12" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+      <h1>SQL QUEST</h1>
+    </div>
+    <p class="tagline"><em>Explore the database. Write the query. Solve the challenge.</em></p>
+    <p class="course">CS317 | Relational Database Practice</p>
+  </header>
+
+  <main class="page">
+
+    <!-- ===== Database Explorer ===== -->
+    <section class="card" id="explorer" aria-labelledby="explorer-title">
+      <div class="card-head">
+        <h2 id="explorer-title">Database Explorer</h2>
+        <span class="muted small">Campus Life database. 4 tables.</span>
+      </div>
+
+      <div class="tabs" id="table-tabs" role="tablist" aria-label="Database tables"></div>
+
+      <div class="legend small muted">
+        <span class="badge pk">PK</span> primary key
+        <span class="badge fk">FK</span> foreign key (points to a column in another table)
+      </div>
+
+      <div id="table-view" class="table-wrap" role="tabpanel"></div>
+
+      <details class="detail" id="schema-details">
+        <summary>Database Schema and relationship diagram</summary>
+        <div class="detail-body">
+          <ul class="plain-list">
+            <li>One club can host many events. <code>Events.club_id</code> points to <code>Clubs.club_id</code>.</li>
+            <li>One student can register for many events, and one event can have many students.</li>
+            <li><code>Registrations</code> connects the two. <code>Registrations.student_id</code> points to <code>Students.student_id</code>, and <code>Registrations.event_id</code> points to <code>Events.event_id</code>.</li>
+            <li>A club can have zero events, an event can have zero registrations, and a student can have zero registrations.</li>
+          </ul>
+          <div class="diagram-wrap">
+            <svg id="schema-diagram" viewBox="0 0 900 215" role="img" aria-label="Relationship diagram. Clubs to Events is one to many. Events to Registrations is one to many. Students to Registrations is one to many.">
+              <defs>
+                <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6"><circle cx="5" cy="5" r="4" fill="#2f6fed"/></marker>
+              </defs>
+
+              <!-- Clubs -->
+              <g transform="translate(10,20)">
+                <rect width="190" height="150" rx="8" class="d-box"/>
+                <rect width="190" height="30" rx="8" class="d-head"/><rect y="20" width="190" height="10" class="d-head"/>
+                <text x="95" y="20" text-anchor="middle" class="d-title">Clubs</text>
+                <text x="12" y="54" class="d-col"><tspan class="d-pk">PK</tspan>  club_id</text>
+                <text x="12" y="78" class="d-col">club_name</text>
+                <text x="12" y="102" class="d-col">category</text>
+              </g>
+              <!-- Events -->
+              <g transform="translate(240,20)">
+                <rect width="190" height="150" rx="8" class="d-box"/>
+                <rect width="190" height="30" rx="8" class="d-head"/><rect y="20" width="190" height="10" class="d-head"/>
+                <text x="95" y="20" text-anchor="middle" class="d-title">Events</text>
+                <text x="12" y="54" class="d-col"><tspan class="d-pk">PK</tspan>  event_id</text>
+                <text x="12" y="78" class="d-col"><tspan class="d-fk">FK</tspan>  club_id</text>
+                <text x="12" y="102" class="d-col">event_name</text>
+                <text x="12" y="126" class="d-col">event_date, location</text>
+              </g>
+              <!-- Registrations -->
+              <g transform="translate(470,20)">
+                <rect width="190" height="150" rx="8" class="d-box"/>
+                <rect width="190" height="30" rx="8" class="d-head"/><rect y="20" width="190" height="10" class="d-head"/>
+                <text x="95" y="20" text-anchor="middle" class="d-title">Registrations</text>
+                <text x="12" y="54" class="d-col"><tspan class="d-pk">PK</tspan>  registration_id</text>
+                <text x="12" y="78" class="d-col"><tspan class="d-fk">FK</tspan>  student_id</text>
+                <text x="12" y="102" class="d-col"><tspan class="d-fk">FK</tspan>  event_id</text>
+                <text x="12" y="126" class="d-col">attendance_status</text>
+              </g>
+              <!-- Students -->
+              <g transform="translate(700,20)">
+                <rect width="190" height="150" rx="8" class="d-box"/>
+                <rect width="190" height="30" rx="8" class="d-head"/><rect y="20" width="190" height="10" class="d-head"/>
+                <text x="95" y="20" text-anchor="middle" class="d-title">Students</text>
+                <text x="12" y="54" class="d-col"><tspan class="d-pk">PK</tspan>  student_id</text>
+                <text x="12" y="78" class="d-col">first_name</text>
+                <text x="12" y="102" class="d-col">last_name</text>
+                <text x="12" y="126" class="d-col">major, year_level</text>
+              </g>
+
+              <!-- Relationships -->
+              <line x1="200" y1="98" x2="240" y2="98" class="d-line"/>
+              <text x="204" y="90" class="d-card">1</text><text x="226" y="90" class="d-card">N</text>
+
+              <line x1="430" y1="98" x2="470" y2="98" class="d-line"/>
+              <text x="434" y="90" class="d-card">1</text><text x="456" y="90" class="d-card">N</text>
+
+              <line x1="660" y1="98" x2="700" y2="98" class="d-line"/>
+              <text x="664" y="90" class="d-card">N</text><text x="686" y="90" class="d-card">1</text>
+
+              <text x="450" y="200" text-anchor="middle" class="d-note">1 = one row, N = many rows. Each line joins a foreign key to the primary key it points to.</text>
+            </svg>
+          </div>
+        </div>
+      </details>
+
+      <details class="detail" id="reference-details">
+        <summary>SQL Reference Card</summary>
+        <div class="detail-body ref-grid">
+          <div class="ref-item"><div class="ref-name">SELECT / FROM</div><pre class="ref-code">SELECT first_name FROM Students;</pre><p>SELECT picks the columns. FROM names the table. Use * for all columns.</p></div>
+          <div class="ref-item"><div class="ref-name">WHERE</div><pre class="ref-code">SELECT * FROM Clubs
+WHERE category = 'Technology';</pre><p>Keeps only the rows that match. Text goes in single quotes.</p></div>
+          <div class="ref-item"><div class="ref-name">AND / OR</div><pre class="ref-code">WHERE major = 'Data Science'
+  AND year_level = 'Junior'</pre><p>AND needs both tests true. OR needs at least one.</p></div>
+          <div class="ref-item"><div class="ref-name">ORDER BY</div><pre class="ref-code">SELECT * FROM Events
+ORDER BY event_date DESC;</pre><p>Sorts the result. ASC is A to Z (default). DESC is Z to A.</p></div>
+          <div class="ref-item"><div class="ref-name">GROUP BY</div><pre class="ref-code">SELECT category, COUNT(*)
+FROM Clubs
+GROUP BY category;</pre><p>Makes one group for each different value, then summarizes each group.</p></div>
+          <div class="ref-item"><div class="ref-name">COUNT()</div><pre class="ref-code">COUNT(*)          -- counts rows
+COUNT(column)     -- skips NULLs</pre><p>COUNT(*) counts every row. COUNT(column) counts only rows where that column is not NULL.</p></div>
+          <div class="ref-item"><div class="ref-name">INNER JOIN</div><pre class="ref-code">SELECT Students.first_name, Registrations.event_id
+FROM Students
+JOIN Registrations
+ON Students.student_id = Registrations.student_id;</pre><p>Keeps only the rows that have a match in both tables.</p></div>
+          <div class="ref-item"><div class="ref-name">LEFT JOIN</div><pre class="ref-code">SELECT Students.first_name, Registrations.event_id
+FROM Students
+LEFT JOIN Registrations
+ON Students.student_id = Registrations.student_id;</pre><p>Keeps every row from the left table. Missing matches show NULL.</p></div>
+          <div class="ref-item ref-wide"><div class="ref-name">SQLite versus MySQL</div>
+            <p>This site runs SQLite in your browser. Most basics are the same as MySQL. Three differences to know. First, = on text is case-sensitive in SQLite, so 'senior' does not match 'Senior'. MySQL usually ignores case. Second, SQLite lets you select a column that is not in GROUP BY, while MySQL normally shows an error. Third, always use single quotes for text values.</p></div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== Challenge Area ===== -->
+    <section class="card" id="challenge" aria-labelledby="challenge-title">
+      <noscript>This page needs JavaScript to run SQL in your browser.</noscript>
+      <div id="challenge-root"><p class="muted">Loading the SQL engine...</p></div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer small muted">
+    SQL Quest runs entirely in your browser with SQLite (sql.js). Nothing is sent to a server. Your progress is saved on this device only.
+  </footer>
+
+  <script src="sql-wasm-inline.js"></script>
+  <script src="quest-core.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
