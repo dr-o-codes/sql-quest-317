@@ -45,8 +45,8 @@
         <summary>Database Schema and relationship diagram</summary>
         <div class="detail-body">
           <ul class="plain-list">
-            <li>One club can host many events. <code>Events.club_id</code> points to <code>Clubs.club_id</code>.</li>
-            <li>One student can register for many events, and one event can have many students.</li>
+            <li>One club can host many events. <code>Events.club_id</code> points to <code>Clubs.club_id</code>.</li> 
+            <li>One student can register for many events, and one event can have many students. This is a many-to-many (M:N) relationship, implemented using the Registrations junction table.</li>
             <li><code>Registrations</code> connects the two. <code>Registrations.student_id</code> points to <code>Students.student_id</code>, and <code>Registrations.event_id</code> points to <code>Events.event_id</code>.</li>
             <li>A club can have zero events, an event can have zero registrations, and a student can have zero registrations.</li>
           </ul>
@@ -106,7 +106,8 @@
               <line x1="660" y1="98" x2="700" y2="98" class="d-line"/>
               <text x="664" y="90" class="d-card">N</text><text x="686" y="90" class="d-card">1</text>
 
-              <text x="450" y="200" text-anchor="middle" class="d-note">1 = one row, N = many rows. Each line joins a foreign key to the primary key it points to.</text>
+              
+              <text x="450" y="200" text-anchor="middle" class="d-note">1 = One, N = Many. Relationships are established through foreign keys.</text>
             </svg>
           </div>
         </div>
